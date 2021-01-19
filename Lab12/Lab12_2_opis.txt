@@ -1,0 +1,13 @@
+Moim zdaniem ciekawym zastosowaniem biblioteki TensorFlow jest wykrywanie obiektów na zdjęciach, umożliwia to na np. przeszukanie bazy obrazów i znalezienie odpowiednich obrazów
+zgodnych z wyszukiwanymi kryteriami, lub w celu znalezienia podobnych obrazów.
+
+Za pomocą biblioteki TensorFlow wczytujemy plik ze zdjęciem do naszego programu, a następnie używamy detektora:
+
+- FasterRCNN+InceptionResNet V2: wysoka dokładność,
+- ssd+mobilenet V2: mały i szybki.
+
+Podświetla on nam znalezione obiekty za pomocą prostokątów i wyswietla procentową zgodność z zagadnieniem
+
+
+
+Źródło programu: https://www.tensorflow.org/hub/tutorials/object_detection
