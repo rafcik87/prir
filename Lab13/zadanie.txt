@@ -1,0 +1,65 @@
+Wielowątkowość jest używana w wielu dziedzinach, jedną z nich jest game dev, w którym wykorzystywana jest możliwośc do kalkulowania wielu elementów przez wiele wątków procesora jednocześnie.
+W grach multithreading jest wykorzystyway pod wieloma względami, lecz najczęściej przy sumulacji AI, znajdowaniu drogi przez bohatera lub postaci niezależne, połączenie internetowe
+czyli wymiana informacji w przypadku gier przez sieć pomiędzy komputerem i serwerem, oraz operacji z plikami czyli zapisywanie i wczytywanie danych. Wykorzystywane są też przy takich
+aspektach jak obliczanie kalkulacji matematycznych w postaci zadanych obrażeń jezeli mamy np. dużo przeciwników i strzelimy w nich z wyrzutni rakietowej. W tym przypadku procesor wywoła
+kilka wątków które w tym samym czasie policzą zadane przez nas obrażenia. 
+
+Pozwala to nam na zniwelowanie przycięć w przypadku kalkullowaniu wielu obiektów jednocześnie, jeżeli jeden rdzeń będzie zajmował się tym wszystkim jednocześnie to zajmie to o wiele wiecej czasu niż
+w przypadku użycia 6 rdzeni procesora, w którym wykorzystujemy 12 wątków. W podanym przykładzie wielowątkowośc jest wykorzystywana w ładowaniu siatki graficzne, co prawda ładowanie takiej siatki
+dla jednego obiektu nie jest obciążające dla obecnych procesorów, ale jeżeli załadujemy takich siatek 6 i na wsyzstkie chcemy nałożyć grafikę w jakości 4K to możemy się spotkać z
+opóźnieniem i w tym czasie nasz provesor będzie generował to wszystko za pomoca jednego wątku. Oczywiście można zaimplementowac taki program przy użyciu procesora jednordzeniowego
+ale nie jest on tak samo wydajny jak procesor kilkurdzeniowy, lub kilkunasto.
+
+
+Przykładowy program:
+
+ 
+using System.Collections;
+using System.Collections.Generic;
+using System.Threading;
+using System;
+using UnityEngine;
+ 
+[RequireComponent(typeof(MeshFilter))]
+[RequireComponent(typeof(MeshRenderer))]
+public class PlantGenerator : MonoBehaviour
+{
+ 
+    List<Vector3> verts = new List<Vector3>();
+    List<int> tris = new List<int>();
+    private bool ready;
+ 
+    void Start () {
+        this.StartCoroutine(this.DoWork());
+    }
+ 
+    IEnumerator DoWork()
+    {
+        ThreadPool.QueueUserWorkItem(GenerateMeshData);
+       
+        while(!ready) yield return null;
+       
+        this.ComposeMesh();
+    }
+   
+    void GenerateMeshData(object token) {
+        //// Generate the mesh data and populate the lists
+        //// I'm leaving this out since it is not relevant to the question
+        ready = true;
+    }
+ 
+    void ComposeMesh() {
+        MeshFilter mf = (MeshFilter)this.gameObject.GetComponent(typeof(MeshFilter));
+ 
+        mf.mesh.vertices = verts.ToArray();
+        mf.mesh.triangles = tris.ToArray();
+       
+        mf.mesh.RecalculateNormals();
+ 
+        verts.Clear();
+        tris.Clear();
+ 
+        done = true;
+    }
+}
+ 
